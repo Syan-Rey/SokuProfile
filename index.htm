@@ -65,7 +65,6 @@
   }
   .color-btn.active { background: var(--accent-color); color: #000; font-weight: bold; }
 
-  /* 通信設定用スタイル */
   .connection-row { margin-bottom: 8px; font-size: 0.9em; }
 
   .btn-group { display: flex; gap: 10px; margin-top: 20px; }
@@ -309,14 +308,12 @@ function updatePreview() {
   drawLbl('PLAYER NAME', 55, 130); drawDat(name, 55, 185, 'bold 44px serif');
   drawLbl('RANK / RATE', 55, 230); drawDat(rank, 55, 260, 'bold 24px serif');
   
-  // メインキャラをフルネームで表示
   drawLbl('MAIN CHARACTER', 55, 305); 
   const mainName = selectedMain.id === "random" ? "ランダム" : `${selectedMain.name} (${selectedColor}P)`;
   drawDat(mainName, 55, 335, 'bold 20px serif');
   
   drawLbl('SUB CHARACTERS', 55, 385); 
   ctx.fillStyle = '#fdf5e6'; ctx.font = 'bold 15px serif';
-  // サブキャラをフルネームで結合
   const subNames = selectedSubs.map(s => s.name).join(', ') || '---';
   let subY = drawWrap(ctx, subNames, 55, 415, 380, 22);
   
@@ -325,15 +322,23 @@ function updatePreview() {
   drawLbl('HOST / CLIENT', 55, nextY + 85); drawDat(`ホスト: ${hS} / クライアント: ${cS}`, 55, nextY + 115, 'bold 18px serif');
   drawLbl('DEVICE', 55, nextY + 170); drawDat(document.getElementById('device').value, 55, nextY + 200, 'bold 17px serif');
 
+  // キャラクター表示エリア（ランダム時はコンパクトに）
+  const charBoxX = 460;
+  const charBoxY = 90;
+
   if (selectedMain.id === "random") {
-    ctx.fillStyle = '#1a0f0a'; ctx.fillRect(460, 90, 300, 400); 
-    ctx.strokeStyle = brass; ctx.lineWidth = 2; ctx.strokeRect(458, 88, 304, 404);
-    ctx.fillStyle = brass; ctx.font = 'bold 150px serif'; ctx.textAlign = 'center';
-    ctx.fillText('？', 460 + 150, 90 + 260); ctx.textAlign = 'left';
+    const w = 240, h = 320;
+    ctx.fillStyle = '#1a0f0a'; ctx.fillRect(charBoxX, charBoxY, w, h); 
+    ctx.strokeStyle = brass; ctx.lineWidth = 2; ctx.strokeRect(charBoxX, charBoxY, w, h);
+    ctx.fillStyle = brass; ctx.font = 'bold 100px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('？', charBoxX + (w / 2), charBoxY + (h / 2) + 10); 
+    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
   } else if(charImage.complete && charImage.naturalWidth !== 0) {
-    ctx.drawImage(charImage, 460, 90);
+    const w = charImage.naturalWidth;
+    const h = charImage.naturalHeight;
+    ctx.drawImage(charImage, charBoxX, charBoxY);
     ctx.strokeStyle = brass; ctx.lineWidth = 2;
-    ctx.strokeRect(458, 88, charImage.width + 4, charImage.height + 4);
+    ctx.strokeRect(charBoxX, charBoxY, w, h);
   }
   
   let rightY = 460;
